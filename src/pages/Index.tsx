@@ -148,10 +148,7 @@ const Index = () => {
   return (
     <div className="flex flex-col h-screen w-full overflow-hidden bg-background">
       <Headbar />
-      <Navbar 
-        onUploadCV={triggerFileUpload}
-        onOpenOffers={() => setIsPanelOpen(true)}
-      />
+      <Navbar />
       
       <div className="flex flex-1 overflow-hidden">
         <ChatSidebar
