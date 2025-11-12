@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { ChatSidebar } from "@/components/ChatSidebar";
 import { MessageBubble } from "@/components/MessageBubble";
 import { ChatInput } from "@/components/ChatInput";
 import { DatabasePanel } from "@/components/DatabasePanel";
+import Headbar from "@/components/Headbar";
+import Navbar from "@/components/Navbar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 
@@ -27,6 +29,7 @@ const WELCOME_MESSAGE: Message = {
 
 const Index = () => {
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [conversations, setConversations] = useState<Conversation[]>([
     {
       id: "1",
@@ -131,33 +134,61 @@ const Index = () => {
     }
   };
 
+  const triggerFileUpload = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleFileUpload(file);
+    }
+  };
+
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-background">
-      <ChatSidebar
-        conversations={conversations}
-        activeConversationId={activeConversationId}
-        onSelectConversation={setActiveConversationId}
-        onNewConversation={handleNewConversation}
-        onDeleteConversation={handleDeleteConversation}
+    <div className="flex flex-col h-screen w-full overflow-hidden bg-background">
+      <Headbar />
+      <Navbar 
+        onUploadCV={triggerFileUpload}
+        onOpenOffers={() => setIsPanelOpen(true)}
       />
-
-      <main className="flex-1 flex flex-col relative">
-        <ScrollArea className="flex-1 px-4 md:px-8">
-          <div className="max-w-4xl mx-auto py-8">
-            {activeConversation?.messages.map((message) => (
-              <MessageBubble key={message.id} role={message.role} content={message.content} />
-            ))}
-          </div>
-        </ScrollArea>
-
-        <ChatInput
-          onSendMessage={handleSendMessage}
-          onFileUpload={handleFileUpload}
-          isLoading={isLoading}
+      
+      <div className="flex flex-1 overflow-hidden">
+        <ChatSidebar
+          conversations={conversations}
+          activeConversationId={activeConversationId}
+          onSelectConversation={setActiveConversationId}
+          onNewConversation={handleNewConversation}
+          onDeleteConversation={handleDeleteConversation}
         />
-      </main>
 
-      <DatabasePanel isOpen={isPanelOpen} onToggle={() => setIsPanelOpen(!isPanelOpen)} />
+        <main className="flex-1 flex flex-col relative">
+          <ScrollArea className="flex-1 px-4 md:px-8">
+            <div className="max-w-4xl mx-auto py-8">
+              {activeConversation?.messages.map((message) => (
+                <MessageBubble key={message.id} role={message.role} content={message.content} />
+              ))}
+            </div>
+          </ScrollArea>
+
+          <ChatInput
+            onSendMessage={handleSendMessage}
+            onFileUpload={handleFileUpload}
+            isLoading={isLoading}
+          />
+        </main>
+
+        <DatabasePanel isOpen={isPanelOpen} onToggle={() => setIsPanelOpen(!isPanelOpen)} />
+      </div>
+
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".pdf"
+        className="hidden"
+        onChange={handleFileInputChange}
+      />
     </div>
   );
 };
