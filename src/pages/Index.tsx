@@ -27,23 +27,7 @@ const WELCOME_MESSAGES = [
   "¡Bienvenido! 💼 Soy Vocare, tu compañero en la búsqueda laboral.\n\nPuedo revisar tu currículum o simplemente conversar sobre tus intereses profesionales.\n\n¿Cómo te gustaría empezar?",
 ];
 
-const GENERAL_RESPONSES = [
-  "Entiendo 👍 Cuéntame más sobre lo que buscas y te ayudaré a encontrar las mejores opciones.",
-  "Genial, gracias por contarme eso. Creo que tengo algo que podría interesarte 🌟",
-  "Perfecto 🙌 Déjame buscar opciones que encajen con tu perfil.",
-  "Me parece muy interesante tu experiencia. ¿Hay algún área específica en la que te gustaría trabajar?",
-  "Excelente punto. Basándome en lo que me cuentas, puedo recomendarte algunas ofertas. ¿Quieres que busquemos juntos?",
-  "Eso suena bien 💬 ¿Te gustaría que te muestre algunas oportunidades relacionadas?",
-];
-
-const CV_ANALYSIS_RESPONSES = [
-  "¡Listo! 📄 He revisado tu CV y veo que tienes un perfil muy interesante. Déjame buscar ofertas que coincidan con tu experiencia.",
-  "Perfecto, ya analicé tu currículum 🌟 Veo experiencia valiosa aquí. Te voy a recomendar algunas oportunidades que podrían encajar muy bien.",
-  "Excelente CV 💼 He identificado tus fortalezas y áreas de interés. ¿Te gustaría ver las ofertas que más se ajustan a tu perfil?",
-  "¡Muy bien! Ya revisé tu información. Tu experiencia es relevante para varias posiciones que tengo en mente. ¿Empezamos a explorar opciones?",
-];
-
-const getRandomMessage = (messages: string[]) => 
+const getRandomMessage = (messages: string[]) =>
   messages[Math.floor(Math.random() * messages.length)];
 
 const WELCOME_MESSAGE: Message = {
@@ -67,9 +51,14 @@ const Index = () => {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const activeConversation = conversations.find((c) => c.id === activeConversationId);
+  const activeConversation = conversations.find(
+    (c) => c.id === activeConversationId
+  );
 
-  const handleSendMessage = (content: string) => {
+  // ───────────────────────
+  // Enviar mensaje al backend
+  // ───────────────────────
+  const handleSendMessage = async (content: string) => {
     if (!activeConversationId) return;
 
     const newUserMessage: Message = {
@@ -81,64 +70,97 @@ const Index = () => {
     setConversations((prev) =>
       prev.map((conv) =>
         conv.id === activeConversationId
-          ? {
-              ...conv,
-              messages: [...conv.messages, newUserMessage],
-              lastUpdated: "Ahora",
-            }
+          ? { ...conv, messages: [...conv.messages, newUserMessage], lastUpdated: "Ahora" }
           : conv
       )
     );
 
-    // Simulate bot response
     setIsLoading(true);
-    setTimeout(() => {
+    try {
+      const res = await fetch("http://localhost:3001/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: content }),
+      });
+      const data = await res.json();
+
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: getRandomMessage(GENERAL_RESPONSES),
+        content: data.reply ?? "(sin respuesta)",
       };
 
       setConversations((prev) =>
         prev.map((conv) =>
           conv.id === activeConversationId
-            ? {
-                ...conv,
-                messages: [...conv.messages, botResponse],
-              }
+            ? { ...conv, messages: [...conv.messages, botResponse] }
             : conv
         )
       );
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: "Error",
+        description: "No se pudo conectar al servidor",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
+  // ───────────────────────
+  // Subir CV al backend
+  // ───────────────────────
   const handleFileUpload = (file: File) => {
     toast({
       title: "✓ CV recibido",
       description: `${file.name} se está analizando...`,
     });
 
-    // Simulate CV processing
-    setTimeout(() => {
-      const botMessage: Message = {
-        id: Date.now().toString(),
-        role: "assistant",
-        content: getRandomMessage(CV_ANALYSIS_RESPONSES),
-      };
+    setIsLoading(true);
 
-      setConversations((prev) =>
-        prev.map((conv) =>
-          conv.id === activeConversationId
-            ? {
-                ...conv,
-                messages: [...conv.messages, botMessage],
-                lastUpdated: "Ahora",
-              }
-            : conv
-        )
-      );
-    }, 2000);
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64CV = reader.result as string;
+
+      try {
+        const res = await fetch("http://localhost:3001/api/cv", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cv: base64CV }),
+        });
+
+        const data = await res.json();
+
+        const botMessage: Message = {
+          id: Date.now().toString(),
+          role: "assistant",
+          content: data.message ?? "CV recibido correctamente.",
+        };
+
+        setConversations((prev) =>
+          prev.map((conv) =>
+            conv.id === activeConversationId
+              ? {
+                  ...conv,
+                  messages: [...conv.messages, botMessage],
+                  lastUpdated: "Ahora",
+                }
+              : conv
+          )
+        );
+      } catch (err) {
+        console.error(err);
+        toast({
+          title: "Error",
+          description: "No se pudo subir el CV",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    reader.readAsDataURL(file); // Esto convierte el PDF a Base64
   };
 
   const handleNewConversation = () => {
@@ -146,11 +168,13 @@ const Index = () => {
       id: Date.now().toString(),
       title: "Nueva conversación",
       lastUpdated: "Ahora",
-      messages: [{
-        id: "welcome-" + Date.now(),
-        role: "assistant",
-        content: getRandomMessage(WELCOME_MESSAGES),
-      }],
+      messages: [
+        {
+          id: "welcome-" + Date.now(),
+          role: "assistant",
+          content: getRandomMessage(WELCOME_MESSAGES),
+        },
+      ],
     };
     setConversations((prev) => [...prev, newConv]);
     setActiveConversationId(newConv.id);
@@ -169,16 +193,14 @@ const Index = () => {
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      handleFileUpload(file);
-    }
+    if (file) handleFileUpload(file);
   };
 
   return (
     <div className="flex flex-col h-screen w-full overflow-hidden bg-background">
       <Headbar />
       <Navbar />
-      
+
       <div className="flex flex-1 overflow-hidden">
         <ChatSidebar
           conversations={conversations}
@@ -192,7 +214,11 @@ const Index = () => {
           <ScrollArea className="flex-1 px-4 md:px-8">
             <div className="max-w-4xl mx-auto py-8">
               {activeConversation?.messages.map((message) => (
-                <MessageBubble key={message.id} role={message.role} content={message.content} />
+                <MessageBubble
+                  key={message.id}
+                  role={message.role}
+                  content={message.content}
+                />
               ))}
             </div>
           </ScrollArea>
@@ -204,7 +230,10 @@ const Index = () => {
           />
         </main>
 
-        <DatabasePanel isOpen={isPanelOpen} onToggle={() => setIsPanelOpen(!isPanelOpen)} />
+        <DatabasePanel
+          isOpen={isPanelOpen}
+          onToggle={() => setIsPanelOpen(!isPanelOpen)}
+        />
       </div>
 
       {/* Hidden file input */}

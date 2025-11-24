@@ -1,0 +1,99 @@
+titulo,empresa,ubicacion,modalidad,experiencia_requerida,habilidades,descripcion
+Desarrollador Backend,ACME,Remoto,Full-time,2 años,Node.js; SQL; APIs,Desarrollo de microservicios y mantenimiento de plataformas.
+Analista de Datos,Globant,Santiago,Híbrido,1 año,Python; PowerBI; SQL,Análisis de KPIs y construcción de dashboards.
+Soporte TI,Nexa,Presencial,Full-time,0-1 año,Atención al usuario; Hardware básico,Soporte técnico nivel 1 para empleados internos.
+Diseñador UX Junior,StartUp XYZ,Remoto,Part-time,0 años,Figma; Investigación UX,Diseño de wireframes y pruebas de usabilidad.
+Ingeniero DevOps,TechCorp,Santiago,Híbrido,3 años,AWS; Docker; CI/CD,Mantenimiento de infraestructura en la nube y automatización.
+Frontend Developer React,DigitalMind,Remoto,Full-time,2 años,React; TypeScript; CSS,Diseño e implementación de interfaces web.
+Product Manager,InnovaLab,Santiago,Híbrido,3 años,Agile; Roadmapping; UX,Gestión del ciclo de vida de productos digitales.
+QA Analyst,SoftTest,Presencial,Full-time,1 año,Testing manual; Jira; SQL,Ejecución de planes de prueba y reporte de bugs.
+Data Engineer,DataWorks,Remoto,Full-time,2 años,Python; Airflow; ETL,Construcción de pipelines y procesamiento de datos.
+Community Manager,Brandly,Santiago,Presencial,1 año,Redes sociales; Copywriting,Gestión de comunidades y contenido en redes.
+Administrador de Sistemas,SysPro,Remoto,Full-time,2 años,Linux; Redes; Bash,Administración de servidores y soporte.
+Business Analyst,Consultora ABC,Santiago,Híbrido,2 años,Excel; SQL; Comunicación,Análisis de procesos y levantamiento de requerimientos.
+UX Researcher,HumanLab,Remoto,Part-time,1 año,Entrevistas; Benchmarking,Investigación cualitativa y análisis de usuarios.
+Machine Learning Engineer,AI4All,Remoto,Full-time,3 años,Python; TensorFlow; ML Ops,Entrenamiento y despliegue de modelos.
+Full Stack Developer,CodeFactory,Híbrido,Full-time,2-3 años,Node.js; React; PostgreSQL,Desarrollo de plataformas end-to-end.
+Ejecutivo Comercial,BizCorp,Santiago,Presencial,1 año,Ventas; CRM,Búsqueda de clientes y gestión comercial.
+Scrum Master,AgileWay,Remoto,Full-time,2 años,Scrum; Facilitación; Jira,Facilitación de ceremonias ágiles.
+Cybersecurity Analyst,SecureOne,Remoto,Full-time,2 años,SIEM; Análisis forense,Monitoreo de incidentes y seguridad.
+Diseñador Gráfico,Creativa Studio,Presencial,Full-time,1 año,Illustrator; Photoshop,Creación de piezas gráficas y branding.
+Data Scientist,ThinkData,Remoto,Full-time,2 años,Python; ML; Estadística,Modelamiento predictivo y análisis de datos.
+Ingeniero de Redes,NetCorp,Presencial,Full-time,2 años,Cisco; Routing; Switching,Configuración y mantención de redes corporativas.
+Especialista en Marketing Digital,AdsLab,Santiago,Híbrido,1-2 años,Google Ads; Meta Ads; Analytics,Gestión de campañas digitales.
+Ejecutivo de Soporte Cliente,HelpCo,Remoto,Part-time,0 años,Comunicación; Resolución de problemas,Atención a clientes y resolución básica.
+Mobile Developer Flutter,Appify,Remoto,Full-time,2 años,Flutter; Dart; APIs,Desarrollo de aplicaciones móviles.
+Asistente Administrativo,OfiPlus,Presencial,Full-time,0-1 año,Excel; Gestión documental,Apoyo en tareas administrativas.
+Ingeniero Cloud,AWS Partners,Híbrido,Full-time,3 años,AWS; Kubernetes; Terraform,Implementación de infraestructura cloud.
+Especialista en RRHH,PeopleNow,Santiago,Presencial,2 años,Reclutamiento; Payroll,Gestión de procesos de recursos humanos.
+Arquitecto de Software,HighTech,Remoto,Full-time,5 años,Microservicios; Arquitectura; Cloud,Diseño de soluciones escalables.
+Ingeniero de Calidad,ProManufacture,Presencial,Full-time,1-2 años,ISO9001; Auditorías,Control y mejora de procesos.
+Vendedor Retail,FastShop,Santiago,Presencial,0 años,Atención al cliente; Ventas,Venta directa en tienda.
+Contador General,Financy,Presencial,Full-time,3 años,ERP; Legislación tributaria,Registro contable y declaraciones.
+Project Manager IT,TechLead,Híbrido,Full-time,3 años,Gestión de proyectos; Agile,Liderar proyectos tecnológicos.
+Redactor de Contenidos,ContentPro,Remoto,Part-time,1 año,SEO; Escritura,Creación de artículos y contenido digital.
+Ingeniero Eléctrico,ElectroMax,Presencial,Full-time,2 años,Autocad; Control industrial,Diseño y mantención de circuitos.
+Asesor Financiero,FinExpert,Santiago,Presencial,1 año,Finanzas; Excel,Asesoría y planificación financiera.
+Técnico Electrónico,TechFix,Presencial,Full-time,0-1 año,Electrónica; Reparaciones,Reparación de equipos electrónicos.
+Consultor SAP,SAPWorks,Híbrido,Full-time,2 años,SAP FI; SAP MM,Implementación y soporte SAP.
+Ingeniero Mecánico,InduMach,Presencial,Full-time,2 años,Modelado 3D; Autocad,Diseño de componentes mecánicos.
+Recepcionista,HotelSuite,Santiago,Presencial,Full-time,0 años,Atención al cliente; Gestión de reservas,Recepción y coordinación hotelera.
+Product Designer,DigiCraft,Remoto,Full-time,2 años,Figma; Prototipado,Diseño y validación de productos digitales.
+Reclutador TI,TalentTech,Remoto,Full-time,1 año,LinkedIn Recruiter; Entrevistas,Búsqueda y selección de perfiles tecnológicos.
+Ingeniero Industrial,ProdWay,Presencial,Full-time,2 años,Lean; Excel,Optimización de procesos productivos.
+Coordinador Logístico,TransGo,Santiago,Presencial,1 año,Planificación; Manejo de inventario,Coordinación de transporte y bodegas.
+Especialista SEO,SearchPro,Remoto,Full-time,1 año,SEO On-Page; SEM,Optimización de posicionamiento web.
+Técnico en Redes,NetServices,Presencial,Full-time,0-1 año,Cableado; Configuración routers,Instalación y soporte de redes.
+Asistente Contable,CuentaPlus,Presencial,Part-time,0 años,Excel; Registro contable,Apoyo en facturación y conciliaciones.
+Ingeniero QA Automatización,TestOps,Remoto,Full-time,2 años,Selenium; Cypress; JavaScript,Automatización de pruebas.
+Especialista BI,InsightTech,Híbrido,Full-time,2 años,PowerBI; SQL; DAX,Creación de dashboards y análisis de datos.
+Diseñador Multimedia,MediaWorks,Presencial,Full-time,1 año,After Effects; Edición video,Creación de contenido audiovisual.
+Ingeniero de Automatización,AutoLogic,Santiago,Presencial,2 años,PLC; SCADA; Electricidad industrial,Implementación y mantenimiento de sistemas automatizados.
+Desarrollador Java,CodeGroup,Remoto,Full-time,2 años,Java; Spring Boot; SQL,Desarrollo de servicios backend empresariales.
+Marketing Specialist,EcomGrow,Híbrido,1-2 años,Email marketing; SEO; Analytics,Optimización de campañas y contenido digital.
+Data Analyst Junior,InsightCo,Remoto,0-1 año,Excel; SQL; Python,Análisis exploratorio y generación de reportes.
+Ingeniero de Soporte N2,TechSupport,Presencial,Full-time,1 año,Redes; Linux; Troubleshooting,Resolución de incidentes complejos de infraestructura.
+Diseñador Web,CreativeBit,Remoto,Part-time,0-1 año,HTML; CSS; Figma,Creación y mantenimiento de sitios web.
+Consultor de Procesos,LeanPro,Santiago,Híbrido,2 años,Lean; Six Sigma; BPMN,Optimización de procesos y levantamiento de mejoras.
+Ejecutivo de Cuentas,SalesCorp,Presencial,Full-time,1 año,Ventas B2B; CRM,Gestión comercial y prospección de clientes.
+Ingeniero Full Stack Python,DevSolutions,Remoto,Full-time,2 años,Python; Django; React,Desarrollo de plataformas web.
+Product Owner,AgileFlow,Híbrido,Full-time,2-3 años,Agile; Roadmap; Jira,Gestión del backlog y prioridades de producto.
+QA Tester Junior,CheckLabs,Remoto,0 años,Testing manual; Documentación,Ejecución de pruebas funcionales y reporte de fallos.
+Especialista Cloud Azure,BlueCloud,Híbrido,3 años,Azure; DevOps; Infra as Code,Administración y optimización de servicios Azure.
+Arquitecto Cloud,CloudBridge,Remoto,5 años,AWS; Microservicios; Kubernetes,Diseño de soluciones cloud escalables.
+Técnico en Soporte Terreno,FixIt,Presencial,Full-time,0-1 año,Hardware; Redes básicas,Soporte presencial a clientes corporativos.
+Desarrollador iOS,AppMobile,Remoto,2 años,Swift; Xcode; APIs,Desarrollo de aplicaciones para iPhone.
+Desarrollador Android,MobileDev,Santiago,Híbrido,2 años,Kotlin; Android Studio,Desarrollo y mantenimiento de apps móviles.
+Consultor BI,DataSense,Híbrido,Full-time,2 años,PowerBI; SQL; ETL,Construcción de tableros y análisis avanzado.
+Especialista en Reclutamiento,HR Talent,Santiago,Presencial,1-2 años,Entrevistas; Sourcing,Gestión completa del proceso de selección.
+Ingeniero de Proyectos,InfraTech,Presencial,Full-time,2 años,Gestión de proyectos; Autocad,Desarrollo y coordinación de proyectos industriales.
+Analista Funcional,SystemFlow,Híbrido,Full-time,1-2 años,Requerimientos; Casos de uso,Análisis funcional y documentación.
+Ejecutivo de Atención Cliente,BankPlus,Santiago,Presencial,1 año,Empatía; Gestión casos,Resolución de consultas bancarias.
+Ingeniero de Software .NET,SoftCore,Remoto,2 años,C#; .NET; SQL,Desarrollo de aplicaciones corporativas.
+Diseñador UI,VisuaLab,Remoto,1 año,Figma; UI Systems,Creación de interfaces digitales y sistemas de diseño.
+Especialista en Ciberseguridad Cloud,SecureCloud,Remoto,3 años,AWS Security; IAM,Monitoreo y hardening de entornos cloud.
+Analista de Inventario,LogiTrack,Presencial,Full-time,1 año,Excel; ERP,Control de stock y análisis logístico.
+Jefe de Operaciones,RootOps,Santiago,Full-time,3-5 años,Operaciones; Liderazgo; Excel,Gestión global de operaciones y KPIs.
+VFX Artist,MotionFx,Remoto,2 años,After Effects; 3D,Producción de efectos visuales para video.
+Copywriter Digital,ContentPlus,Remoto,1 año,SEO; Redacción persuasiva,Creación de contenido digital optimizado.
+Gestor de Proyectos TI,ProTech,Híbrido,Full-time,3 años,PMI; Scrum; Jira,Coordinación de proyectos tecnológicos.
+Analista de Marketing,BrandDrive,Santiago,Híbrido,1-2 años,Analytics; SEO; Google Ads,Análisis y ejecución de campañas.
+Ingeniero Químico,InduLab,Presencial,Full-time,2 años,Control calidad; Procesos químicos,Supervisión de procesos productivos.
+Técnico Mecánico,FixMoto,Presencial,Full-time,0-1 año,Mecánica; Diagnóstico,Fabricación y reparación mecánica.
+Gestor de Cobranza,PayTrack,Presencial,Full-time,1 año,Negociación; Excel,Gestión de cuentas por cobrar.
+Project Leader,BuildIt,Santiago,Híbrido,3 años,Gestión; Comunicación,Liderar equipos y coordinar hitos clave.
+Analista de Comercio Exterior,GlobalTrade,Presencial,1 año,Incoterms; Aduanas,Gestión de importaciones y exportaciones.
+Ingeniero Robótica,RobotIQ,Remoto,2 años,ROS; Python; Integración,Desarrollo de sistemas robotizados.
+Gestor Ecommerce,ShopMax,Remoto,1 año,Shopify; Google Analytics,Gestión de tienda online y análisis.
+Especialista en Automatización RPA,RPAWorks,Híbrido,Full-time,2 años,UiPath; Automation,Diseño y automatización de procesos.
+Analista de Riesgo,FinancePro,Santiago,Presencial,2 años,Estadística; SQL,Evaluación de riesgo financiero.
+Técnico en Telecomunicaciones,TeleLink,Presencial,Full-time,0-1 año,Redes; Fibra óptica,Instalación y mantención de servicios.
+Ingeniero Frontend Vue,WebStudio,Remoto,2 años,Vue.js; JavaScript; CSS,Construcción de interfaces escalables.
+Consultor CRM Salesforce,SalesForceCo,Híbrido,Full-time,2 años,Salesforce; Apex,Implementación y soporte CRM.
+Analista de Seguridad,SecurePoint,Remoto,Full-time,1-2 años,SIEM; Logs; Respuesta incidentes,Monitoreo y gestión de alertas.
+Fotógrafo Digital,PhotoPro,Presencial,Part-time,0-1 año,Cámara digital; Edición,Producción de contenido fotográfico.
+Encargado de Bodega,LogiWare,Presencial,Full-time,1 año,Inventario; ERP,Gestión de bodega y recepción de productos.
+Ingeniero de Integraciones,APIConnect,Remoto,2 años,APIs; Postman; Node.js,Integración entre sistemas internos y externos.
+Especialista en Email Marketing,MailBoost,Remoto,1 año,Klaviyo; Copywriting,Creación y optimización de flujos de email.
+Analista de Calidad,QualityOne,Presencial,1-2 años,ISO; Auditoría,Verificación de procesos y estándares internos.
+Coordinador de Ventas,MarketPro,Santiago,Presencial,1-2 años,CRM; Gestión comercial,Coordinación de fuerza de ventas.
