@@ -1,0 +1,31 @@
+.markdown {
+  line-height: 1.6;
+}
+
+/* margen entre bloques de texto */
+.markdown p {
+  margin-bottom: 0.4rem;
+}
+
+/* listas con viñetas claras */
+.markdown ul {
+  list-style-type: disc;
+  margin-bottom: 0.4rem;
+  padding-left: 1.25rem;
+}
+
+.markdown ol {
+  list-style-type: decimal;
+  margin-bottom: 0.4rem;
+  padding-left: 1.25rem;
+}
+
+/* cada item un poquito separado */
+.markdown li {
+  margin-bottom: 0.15rem;
+}
+
+/* negritas un poquito más marcadas */
+.markdown strong {
+  font-weight: 600;
+}

@@ -11,6 +11,10 @@
     "skipLibCheck": true,
     "allowJs": true,
     "noUnusedLocals": false,
-    "strictNullChecks": false
+    "strictNullChecks": false, 
+    "esModuleInterop": true,              /* Habilita la importación de módulos CommonJS como módulos ES6 (Obligatorio para Express/CORS) */
+    "moduleResolution": "node",           /* O 'node', para compatibilidad con CommonJS. */
+    "target": "ES2020",                   /* Asegura que el código se compile con sintaxis moderna. */
+    "module": "CommonJS",
   }
 }

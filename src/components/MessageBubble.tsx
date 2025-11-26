@@ -1,4 +1,8 @@
 import { cn } from "@/lib/utils";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
+import "./components.css"
 
 interface MessageBubbleProps {
   role: "user" | "assistant";
@@ -18,7 +22,7 @@ export function MessageBubble({ role, content }: MessageBubbleProps) {
           V
         </div>
       )}
-      
+
       <div
         className={cn(
           "max-w-[80%] md:max-w-[70%] px-4 py-3 rounded-2xl",
@@ -27,7 +31,34 @@ export function MessageBubble({ role, content }: MessageBubbleProps) {
             : "bg-bot-message border-2 border-bot-message-border text-foreground rounded-bl-sm"
         )}
       >
-        <p className="text-sm leading-relaxed whitespace-pre-wrap">{content}</p>
+        {role === "assistant" ? (
+          <div className="markdown text-sm leading-relaxed">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm, remarkBreaks]}
+              components={{
+                p: (props) => (
+                  <p className="mb-2">{props.children}</p>
+                ),
+                ul: (props) => (
+                  <ul className="list-disc pl-5 mb-2">{props.children}</ul>
+                ),
+                ol: (props) => (
+                  <ol className="list-decimal pl-5 mb-2">{props.children}</ol>
+                ),
+                li: (props) => <li className="mb-1">{props.children}</li>,
+                strong: (props) => (
+                  <strong className="font-semibold">{props.children}</strong>
+                ),
+              }}
+            >
+              {content}
+            </ReactMarkdown>
+          </div>
+        ) : (
+          <p className="text-sm leading-relaxed whitespace-pre-wrap">
+            {content}
+          </p>
+        )}
       </div>
 
       {role === "user" && (

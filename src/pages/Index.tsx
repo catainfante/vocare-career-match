@@ -1,3 +1,4 @@
+// src/pages/index.tsx (o donde esté este componente)
 import { useState, useRef } from "react";
 import { ChatSidebar } from "@/components/ChatSidebar";
 import { MessageBubble } from "@/components/MessageBubble";
@@ -30,21 +31,22 @@ const WELCOME_MESSAGES = [
 const getRandomMessage = (messages: string[]) =>
   messages[Math.floor(Math.random() * messages.length)];
 
-const WELCOME_MESSAGE: Message = {
-  id: "welcome",
+const createWelcomeMessage = (): Message => ({
+  id: "welcome-" + Date.now(),
   role: "assistant",
   content: getRandomMessage(WELCOME_MESSAGES),
-};
+});
 
 const Index = () => {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [conversations, setConversations] = useState<Conversation[]>([
     {
       id: "1",
       title: "Búsqueda de empleo en tecnología",
       lastUpdated: "Hace 2 horas",
-      messages: [WELCOME_MESSAGE],
+      messages: [createWelcomeMessage()],
     },
   ]);
   const [activeConversationId, setActiveConversationId] = useState<string>("1");
@@ -59,7 +61,7 @@ const Index = () => {
   // Enviar mensaje al backend
   // ───────────────────────
   const handleSendMessage = async (content: string) => {
-    if (!activeConversationId) return;
+    if (!activeConversationId || !content.trim()) return;
 
     const newUserMessage: Message = {
       id: Date.now().toString(),
@@ -70,7 +72,11 @@ const Index = () => {
     setConversations((prev) =>
       prev.map((conv) =>
         conv.id === activeConversationId
-          ? { ...conv, messages: [...conv.messages, newUserMessage], lastUpdated: "Ahora" }
+          ? {
+              ...conv,
+              messages: [...conv.messages, newUserMessage],
+              lastUpdated: "Ahora",
+            }
           : conv
       )
     );
@@ -93,7 +99,11 @@ const Index = () => {
       setConversations((prev) =>
         prev.map((conv) =>
           conv.id === activeConversationId
-            ? { ...conv, messages: [...conv.messages, botResponse] }
+            ? {
+                ...conv,
+                messages: [...conv.messages, botResponse],
+                lastUpdated: "Ahora",
+              }
             : conv
         )
       );
@@ -160,30 +170,50 @@ const Index = () => {
       }
     };
 
-    reader.readAsDataURL(file); // Esto convierte el PDF a Base64
+    // Si tu CV viene en PDF, aquí lo estás mandando como Base64.
+    // Tu backend actualmente solo lo guarda como texto y se lo pasa al modelo.
+    // Más adelante podrías cambiar esto por un parseo real con pdf-parse.
+    reader.readAsDataURL(file);
   };
 
-  const handleNewConversation = () => {
+  // ───────────────────────
+  // Nueva conversación (frontend + backend)
+  // ───────────────────────
+  const handleNewConversation = async () => {
+    // 1) Resetear SIEMPRE el estado del backend (incluye borrar CV y preferencias)
+    try {
+      await fetch("http://localhost:3001/api/reset-conversacion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // keepCv: false por defecto, pero lo dejamos explícito:
+        body: JSON.stringify({ keepCv: false }),
+      });
+    } catch (err) {
+      console.error("Error al resetear conversación en backend:", err);
+      toast({
+        title: "Error",
+        description: "No se pudo reiniciar la conversación en el servidor",
+      });
+    }
+
+    // 2) Crear una nueva conversación limpia en el front
     const newConv: Conversation = {
       id: Date.now().toString(),
       title: "Nueva conversación",
       lastUpdated: "Ahora",
-      messages: [
-        {
-          id: "welcome-" + Date.now(),
-          role: "assistant",
-          content: getRandomMessage(WELCOME_MESSAGES),
-        },
-      ],
+      messages: [createWelcomeMessage()],
     };
+
     setConversations((prev) => [...prev, newConv]);
     setActiveConversationId(newConv.id);
   };
 
   const handleDeleteConversation = (id: string) => {
     setConversations((prev) => prev.filter((c) => c.id !== id));
+
     if (activeConversationId === id) {
-      setActiveConversationId(conversations[0]?.id || "");
+      const remaining = conversations.filter((c) => c.id !== id);
+      setActiveConversationId(remaining[0]?.id || "");
     }
   };
 
@@ -236,7 +266,7 @@ const Index = () => {
         />
       </div>
 
-      {/* Hidden file input */}
+      {/* Hidden file input (por si lo usas en otro lado) */}
       <input
         ref={fileInputRef}
         type="file"
