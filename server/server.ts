@@ -14,7 +14,7 @@ app.use(express.json({ limit: "10mb" })); // Permite CV más grandes
 // ─────────────────────────────────────────────
 // CARGAR CSV CON OFERTAS
 // ─────────────────────────────────────────────
-const ofertasPath = path.join(process.cwd(), "data", "ofertas.csv");
+const ofertasPath = path.join(__dirname, "data", "ofertas.csv");
 let ofertasTexto = "";
 
 try {
@@ -31,6 +31,9 @@ let areaDefinida: string | null = null;
 let modalidadDefinida: "remoto" | "hibrido" | "presencial" | "cualquiera" | null = null;
 let ubicacionDefinida: string | null = null;
 
+// NUEVO: flujo de preguntas pendiente
+let pasoPendiente: "area" | "modalidad" | "ubicacion" | null = null;
+
 // Helper para resetear conversación (y opcionalmente CV)
 function resetConversacion(keepCv: boolean) {
   if (!keepCv) {
@@ -40,6 +43,7 @@ function resetConversacion(keepCv: boolean) {
   areaDefinida = null;
   modalidadDefinida = null;
   ubicacionDefinida = null;
+  pasoPendiente = null;
 }
 
 // ─────────────────────────────────────────────
@@ -56,10 +60,7 @@ app.post("/api/cv", (req, res) => {
   resetConversacion(false);
   cvGuardado = cv;
 
-  console.log(
-    "CV recibido (primeros 50 caracteres):",
-    cvGuardado.slice(0, 50)
-  );
+  console.log("CV recibido (primeros 50 caracteres):", cvGuardado.slice(0, 50));
 
   return res.json({ message: "CV recibido correctamente" });
 });
@@ -67,7 +68,6 @@ app.post("/api/cv", (req, res) => {
 // ─────────────────────────────────────────────
 // ENDPOINT PARA REINICIAR CONVERSACIÓN
 // ─────────────────────────────────────────────
-// Borra SIEMPRE el CV por defecto (como pediste), a menos que explícitamente se envíe keepCv: true
 app.post("/api/reset-conversacion", (req, res) => {
   const keepCv = req.body?.keepCv ?? false; // por defecto NO mantener CV
   resetConversacion(keepCv);
@@ -96,85 +96,128 @@ app.post("/api/chat", async (req, res) => {
 
   if (hablaTrabajoAhora) {
     contextoTrabajo = true;
+    // Si recién entra al tema laboral y no tenemos área aún, arrancamos el flujo
+    if (!areaDefinida && !pasoPendiente) {
+      pasoPendiente = "area";
+    }
   }
 
   const hablaTrabajo = contextoTrabajo;
   const tieneCV = Boolean(cvGuardado);
 
-  // ── Detección en el MENSAJE ACTUAL ─────────────────
+  // ── Detección básica en el MENSAJE ACTUAL ─────────────────
 
-  // Área de interés (palabras clave muy generales)
   const mencionaAreaActual =
     /datos|data|analista de datos|analytics|desarrollo|developer|programación|programador|software|backend|front[- ]?end|frontend|full[- ]?stack|soporte|ciberseguridad|seguridad|ux|diseño|diseñador|marketing|producto|product manager|qa|testing|infraestructura|devops/i.test(
       message
     );
 
-  // Caso especial: "usa lo que aparece en mi CV" o similar
   const usaCvComoArea =
     /usa .*cv|usa lo que aparece en mi cv|usa lo que sale en mi cv|usa lo de mi cv|usa mi cv/i.test(
       message
     );
 
-  // Modalidad
   const mencionaRemoto = /remoto/i.test(message);
   const mencionaHibrido = /híbrido|hibrido/i.test(message);
   const mencionaPresencial = /presencial/i.test(message);
-  const mencionaIndiferente = /me da lo mismo|no importa|cualquiera/i.test(
-    message
-  );
+  const mencionaIndiferente = /me da lo mismo|no importa|cualquiera/i.test(message);
 
-  // Ubicación (muy básico, Chile)
   const mencionaUbicacionActual =
     /santiago|rm\b|región metropolitana|region metropolitana|valparaíso|valparaiso|antofagasta|biobío|biobio|concepción|conce\b|chile/i.test(
       message
     );
 
-  // ── Actualizar estado global con este mensaje ──────
+  // ── APLICAR RESPUESTA AL FLUJO PENDIENTE ─────────────────
 
-  if (mencionaAreaActual) {
-    // Guarda el mensaje como referencia de área
+  // Si no hay ningún paso pendiente pero sí hablamos de trabajo y no hay área,
+  // aseguramos que el siguiente turno se use para preguntar área.
+  if (hablaTrabajo && !areaDefinida && !pasoPendiente) {
+    pasoPendiente = "area";
+  }
+
+  // 1) Si estamos esperando ÁREA
+  if (pasoPendiente === "area") {
+    if (usaCvComoArea) {
+      areaDefinida = "desde_cv";
+      pasoPendiente = "modalidad";
+    } else if (mencionaAreaActual || message.length > 2) {
+      // Si respondió algo que parece un área, lo tomamos
+      areaDefinida = message;
+      pasoPendiente = "modalidad";
+    }
+  }
+
+  // 2) Si estamos esperando MODALIDAD
+  if (pasoPendiente === "modalidad") {
+    if (mencionaIndiferente) {
+      modalidadDefinida = "cualquiera";
+      pasoPendiente = null; // no necesitamos ubicación
+    } else if (mencionaRemoto) {
+      modalidadDefinida = "remoto";
+      pasoPendiente = null; // remoto => ubicación opcional
+    } else if (mencionaHibrido) {
+      modalidadDefinida = "hibrido";
+      pasoPendiente = "ubicacion"; // híbrido => pedir ubicación
+    } else if (mencionaPresencial) {
+      modalidadDefinida = "presencial";
+      pasoPendiente = "ubicacion"; // presencial => pedir ubicación
+    }
+  }
+
+  // 3) Si estamos esperando UBICACIÓN
+  if (pasoPendiente === "ubicacion") {
+    if (mencionaIndiferente) {
+      ubicacionDefinida = "cualquiera";
+      pasoPendiente = null;
+    } else if (mencionaUbicacionActual || message.length > 2) {
+      ubicacionDefinida = message;
+      pasoPendiente = null;
+    }
+  }
+
+  // También actualizamos de forma "natural" por si el usuario se adelanta
+  if (!areaDefinida && mencionaAreaActual) {
     areaDefinida = message;
-  } else if (usaCvComoArea) {
-    // Marca que el área será "la del CV"
+  } else if (!areaDefinida && usaCvComoArea) {
     areaDefinida = "desde_cv";
   }
 
-  if (mencionaIndiferente && !modalidadDefinida) {
-    modalidadDefinida = "cualquiera";
-  } else if (mencionaRemoto) {
-    modalidadDefinida = "remoto";
-  } else if (mencionaHibrido) {
-    modalidadDefinida = "hibrido";
-  } else if (mencionaPresencial) {
-    modalidadDefinida = "presencial";
+  if (!modalidadDefinida) {
+    if (mencionaIndiferente) {
+      modalidadDefinida = "cualquiera";
+    } else if (mencionaRemoto) {
+      modalidadDefinida = "remoto";
+    } else if (mencionaHibrido) {
+      modalidadDefinida = "hibrido";
+    } else if (mencionaPresencial) {
+      modalidadDefinida = "presencial";
+    }
   }
 
-  if (mencionaIndiferente && modalidadDefinida && !ubicacionDefinida) {
-    // "me da lo mismo" después de la pregunta de ubicación
-    ubicacionDefinida = "cualquiera";
-  } else if (mencionaUbicacionActual) {
-    ubicacionDefinida = message;
+  if (!ubicacionDefinida) {
+    if (mencionaIndiferente && modalidadDefinida && (modalidadDefinida === "hibrido" || modalidadDefinida === "presencial")) {
+      ubicacionDefinida = "cualquiera";
+    } else if (mencionaUbicacionActual) {
+      ubicacionDefinida = message;
+    }
   }
 
-  const faltaArea = hablaTrabajo && !areaDefinida;
-  const faltaModalidad = hablaTrabajo && areaDefinida && !modalidadDefinida;
+  // ── Cálculo de flags a partir del flujo ─────────────────
 
   const requiereUbicacion =
     modalidadDefinida === "hibrido" || modalidadDefinida === "presencial";
 
-  const faltaUbicacion =
-    hablaTrabajo && requiereUbicacion && !ubicacionDefinida;
-
-  const debePreguntarArea = faltaArea;
-  const debePreguntarModalidad = !debePreguntarArea && faltaModalidad;
-  const debePreguntarUbicacion =
-    !debePreguntarArea && !debePreguntarModalidad && faltaUbicacion;
+  // Paso pendiente manda:
+  const debePreguntarArea = pasoPendiente === "area";
+  const debePreguntarModalidad = pasoPendiente === "modalidad";
+  const debePreguntarUbicacion = pasoPendiente === "ubicacion";
 
   const listoParaRecomendar =
     hablaTrabajo &&
-    !debePreguntarArea &&
-    !debePreguntarModalidad &&
-    !debePreguntarUbicacion;
+    !!areaDefinida &&
+    !!modalidadDefinida &&
+    (!requiereUbicacion || !!ubicacionDefinida) &&
+    pasoPendiente === null;
 
   // Log de depuración
   console.log("DEBUG ESTADO:", {
@@ -182,6 +225,7 @@ app.post("/api/chat", async (req, res) => {
     areaDefinida,
     modalidadDefinida,
     ubicacionDefinida,
+    pasoPendiente,
     debePreguntarArea,
     debePreguntarModalidad,
     debePreguntarUbicacion,
@@ -196,6 +240,7 @@ ESTADO (NO SE LO DIGAS AL USUARIO):
 - areaDefinida = ${areaDefinida ?? "(aún no definida)"}
 - modalidadDefinida = ${modalidadDefinida ?? "(aún no definida)"}
 - ubicacionDefinida = ${ubicacionDefinida ?? "(aún no definida)"}
+- pasoPendiente = ${pasoPendiente ?? "ninguno"}
 - debePreguntarArea = ${debePreguntarArea ? "sí" : "no"}
 - debePreguntarModalidad = ${debePreguntarModalidad ? "sí" : "no"}
 - debePreguntarUbicacion = ${debePreguntarUbicacion ? "sí" : "no"}
@@ -249,14 +294,10 @@ ${
 Al recomendar empleos, sigue SIEMPRE este orden:
 
 1) FILTRO DURO POR MODALIDAD (según "modalidadDefinida")
-   - Si modalidadDefinida = "remoto":
-       ➤ SOLO considera ofertas cuya columna "modalidad" sea "Remoto".
-   - Si modalidadDefinida = "presencial":
-       ➤ SOLO ofertas "Presencial".
-   - Si modalidadDefinida = "hibrido":
-       ➤ SOLO ofertas "Híbrido".
-   - Si modalidadDefinida = "cualquiera":
-       ➤ Puedes usar cualquier modalidad, sin filtro duro.
+   - Si modalidadDefinida = "remoto": SOLO ofertas "Remoto".
+   - Si modalidadDefinida = "presencial": SOLO ofertas "Presencial".
+   - Si modalidadDefinida = "hibrido": SOLO ofertas "Híbrido".
+   - Si modalidadDefinida = "cualquiera": cualquier modalidad.
 
 2) (Opcional) FILTRO POR UBICACIÓN
    - Si modalidadDefinida es "presencial" o "hibrido" Y ubicacionDefinida NO es "cualquiera" ni nula:
@@ -265,15 +306,15 @@ Al recomendar empleos, sigue SIEMPRE este orden:
        ➤ No apliques filtro duro por ubicación.
 
 3) CÁLCULO DEL % DE MATCH (SOLO ENTRE LAS OFERTAS QUE PASARON LOS FILTROS)
-   - Usa una estimación mental:
-     - Hasta 50%: similitud de habilidades/tecnologías entre el CV y la columna "habilidades".
+   - Estimación mental:
+     - Hasta 50%: similitud de habilidades/tecnologías entre el CV y "habilidades".
      - Hasta 30%: encaje entre experiencia requerida y experiencia del candidato.
-     - Hasta 20%: alineación con el área de interés (explícita o inferida).
+     - Hasta 20%: alineación con el área de interés.
 
-   - No expliques la fórmula al usuario, solo usa un porcentaje razonable entre 0% y 100%.
+   - No expliques la fórmula; solo usa un porcentaje razonable entre 0% y 100%.
 
 4) SELECCIÓN Y PRESENTACIÓN
-   - Elige los **3 empleos con mayor match** (después de los filtros por modalidad/ubicación).
+   - Elige los **3 empleos con mayor match** (después de los filtros).
    - Preséntalos así:
 
 **🎯 Top 3 empleos recomendados para ti:**
@@ -283,40 +324,33 @@ Al recomendar empleos, sigue SIEMPRE este orden:
    - Ubicación/modalidad: [ubicación], [modalidad]  
    - Motivo del encaje: (2–3 líneas explicando por qué calza con su experiencia, habilidades y preferencias).
 
-2. ...
-
-Al final, invita al usuario a decir si:
-- Quiere que afines aún más según otra preferencia (por ejemplo: sueldo, tipo de industria).
-- Quiere que le expliques cómo podría mejorar su CV para apuntar a esos empleos.
+[...]
 
 4) ESTILO DE RESPUESTA
 ------------------------------------------------
 - Lenguaje natural, cercano y motivador.
-- Usa Markdown simple: **negritas**, listas con guiones o numeración, párrafos cortos.
+- Usa Markdown simple: **negritas**, listas, párrafos cortos.
 - Evita repetir textualmente lo mismo muchas veces.
-- No inventes datos del CSV: trabaja solo con lo que aparece en las ofertas.
+- No inventes datos del CSV.
 - Si todavía falta información para recomendar, sigue estrictamente las reglas del flujo de preguntas anterior.
 `;
 
   try {
-    const response = await fetch(
-      "https://api.deepseek.com/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "deepseek-chat",
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: message },
-          ],
-          temperature: 0.9,
-        }),
-      }
-    );
+    const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "deepseek-chat",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: message },
+        ],
+        temperature: 0.9,
+      }),
+    });
 
     if (!response.ok) {
       const text = await response.text();
@@ -333,10 +367,10 @@ Al final, invita al usuario a decir si:
   }
 });
 
-
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`Servidor IA corriendo en el puerto ${PORT}`);
 });
+
 
