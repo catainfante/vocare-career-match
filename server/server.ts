@@ -14,14 +14,14 @@ app.use(express.json({ limit: "10mb" })); // Permite CV más grandes
 // ─────────────────────────────────────────────
 // CARGAR CSV CON OFERTAS
 // ─────────────────────────────────────────────
-const ofertasPath = path.join(process.cwd(), "server", "data", "ofertas.csv");
+const ofertasPath = path.join(process.cwd(), "data", "ofertas.csv");
 let ofertasTexto = "";
 
 try {
   ofertasTexto = fs.readFileSync(ofertasPath, "utf8");
   console.log("CSV de ofertas cargado correctamente desde:", ofertasPath);
 } catch (error) {
-  console.warn("⚠️ No se encontró el archivo server/data/ofertas.csv.");
+  console.warn("⚠️ No se encontró el archivo", ofertasPath);
 }
 
 // Estado global simple
@@ -333,7 +333,10 @@ Al final, invita al usuario a decir si:
   }
 });
 
-app.listen(3001, () => {
-  console.log("Servidor IA corriendo en http://localhost:3001");
+
+const PORT = process.env.PORT || 3001;
+
+app.listen(PORT, () => {
+  console.log(`Servidor IA corriendo en el puerto ${PORT}`);
 });
 
