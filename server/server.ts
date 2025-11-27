@@ -13,7 +13,7 @@ app.use(express.json({ limit: "10mb" })); // Permite CV más grandes
 // ─────────────────────────────────────────────
 // CARGAR CSV CON OFERTAS
 // ─────────────────────────────────────────────
-const ofertasPath = path.join(__dirname, "data", "ofertas.csv");
+const ofertasPath = path.join("data", "ofertas.csv");
 let ofertasTexto = "";
 
 try {
