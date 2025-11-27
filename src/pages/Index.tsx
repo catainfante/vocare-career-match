@@ -22,6 +22,9 @@ interface Conversation {
   messages: Message[];
 }
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
+
 const WELCOME_MESSAGES = [
   "👋 ¡Hola! Soy Vocare, tu asistente laboral.\n\nPuedo analizar tu CV o tus intereses y recomendarte las mejores oportunidades laborales.\n\n¿Quieres subir tu currículum o contarme sobre ti?",
   "¡Hola! 🌟 Me llamo Vocare y estoy aquí para ayudarte a encontrar oportunidades laborales que se ajusten a tu perfil.\n\n¿Tienes tu CV a mano o prefieres contarme sobre tu experiencia?",
@@ -83,7 +86,7 @@ const Index = () => {
 
     setIsLoading(true);
     try {
-      const res = await fetch("http://localhost:3001/api/chat", {
+      const res = await fetch(`${API_BASE_URL}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: content }),
@@ -134,7 +137,7 @@ const Index = () => {
       const base64CV = reader.result as string;
 
       try {
-        const res = await fetch("http://localhost:3001/api/cv", {
+        const res = await fetch(`${API_BASE_URL}/api/cv`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ cv: base64CV }),
@@ -182,7 +185,7 @@ const Index = () => {
   const handleNewConversation = async () => {
     // 1) Resetear SIEMPRE el estado del backend (incluye borrar CV y preferencias)
     try {
-      await fetch("http://localhost:3001/api/reset-conversacion", {
+      await fetch(`${API_BASE_URL}/api/reset-conversacion`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         // keepCv: false por defecto, pero lo dejamos explícito:
